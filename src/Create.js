@@ -1,5 +1,7 @@
+import { addDoc, collection, doc } from "firebase/firestore";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { database } from "./config/firebase";
 
 const Create = () => {
     const [title, setTitle] = useState('');
@@ -23,6 +25,23 @@ const Create = () => {
             setIsPending(false);
             // history.go(1);
             history.push('/');
+        })
+
+        addToFirebase();
+    }
+
+    const addToFirebase = () => {
+
+        const CollectionRef = collection(database, "dojo-blogs");
+
+        addDoc(CollectionRef,
+            {
+                "title": title,
+                "body": body,
+                "author": author
+            }
+        ).then(() => {
+            console.log("Inserted");
         })
     }
 

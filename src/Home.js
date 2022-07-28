@@ -1,17 +1,35 @@
 import BlogList from "./BlogList";
 import useFetch from "./useFetch";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { database } from "./config/firebase";
 
 const Home = () => {
-    const { data: blogs, isPending, error} = useFetch("http://localhost:8000/blogs")
+    // const { data: blogs, isPending, error} = useFetch("http://localhost:8000/blogs")
+    const [data, setData] = useState(null);
+    const [isPending, setIsPending] = useState(true);
+    const [error, setError] = useState(null);
 
+        const getDocuments = async () => {
+            const querySnapshot = await getDocs(collection(database, "dojo-blogs")).then((res) => {
+                res.forEach((doc) => {
+                    // doc.data() is never undefined for query doc snapshots
+                    // console.log(doc.id, " => ", doc.data());
+                    setData([doc.data()]);
+                    // console.log(data)
+                    }); 
+            });
+        }
+        getDocuments();
     
     
 
     return (
         <div className="home">
-            { error && <div>{ error }</div> }
-            { isPending && <div>Loading...</div>}
-            {blogs && <BlogList blogs={blogs} title="All Blogs!" />}
+            <h1>Home</h1>
+            {/* { error && <div>{ error }</div> }
+            { isPending && <div>Loading...</div>} */}
+            {data && <BlogList blogs={data} title="All Blogs!" />}
             
         </div>
     );
